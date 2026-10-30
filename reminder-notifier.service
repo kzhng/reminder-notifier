@@ -1,0 +1,16 @@
+[Unit]
+Description=Reminder Notifier
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/bots/reminder-notifier
+ExecStart=/home/ubuntu/bots/reminder-notifier/venv/bin/python /home/ubuntu/bots/reminder-notifier/notifier.py
+Restart=always
+RestartSec=10
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

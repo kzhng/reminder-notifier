@@ -1,0 +1,41 @@
+name: tests
+
+# Run the unit tests on every pull request that targets main.
+on:
+  pull_request:
+    branches: [main]
+
+# The tests only need to read the code.
+permissions:
+  contents: read
+
+# A new push to the same pull request cancels the older, now out-of-date run.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.11 is the oldest version the project supports; 3.12 is what you run.
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      # tzdata is only needed on Windows normally; installing it here too means
+      # the timezone tests never depend on what the runner image happens to have.
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt tzdata
+
+      - name: Run the unit tests
+        run: python -m unittest discover -s tests -v

@@ -1,0 +1,4 @@
+requests>=2.31
+# Python 3.11 or newer is required (it reads TOML with the built-in tomllib).
+# On Windows, timezone names need tzdata:
+tzdata; sys_platform == "win32"

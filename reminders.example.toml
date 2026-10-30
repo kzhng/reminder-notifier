@@ -1,0 +1,116 @@
+# Reminder schedule: every option, with examples.
+# Copy what you need into reminders.toml. Lines starting with # are comments.
+#
+# Every reminder needs:   name, type, time
+# `type` is one of:       once, daily, weekly, monthly, yearly
+# `time` is 24-hour text, like "20:00" (not "8pm"). Keep it in quotes.
+
+# --- File-level settings --------------------------------------------------
+timezone = "Australia/Melbourne"   # all times below are in this timezone (handles daylight saving)
+default_notice_minutes = 15        # reminder this long before; a list like [60, 10] sends two
+check_interval_seconds = 60        # how often to check (optional; lowered automatically if needed)
+missed_notice_minutes = 60         # if the notifier was off when a reminder was due, still tell me about runs
+                                   # that started up to this many minutes ago (0 = off)
+heartbeat_minutes = 5              # how often to ping heartbeat_url (set in secrets.json), if you use one
+
+
+# --- once: a single date ---------------------------------------------------
+[[reminders]]
+name = "Christmas event"
+type = "once"
+date = "2026-12-25"
+time = "19:30"
+notice_minutes = [1440, 60]        # a day before and an hour before
+note = "Bring the party link"      # optional extra line shown under the reminder
+
+
+# --- daily: every day, or every N days -------------------------------------
+[[reminders]]
+name = "Daily check-in"
+type = "daily"
+time = "09:00"
+
+[[reminders]]
+name = "Every third day"
+type = "daily"
+every_days = 3
+starts = "2026-11-01"              # required when every_days is more than 1: the first run
+time = "09:00"
+
+
+# --- weekly: one day, several days, weekdays/weekends, or every N weeks ------
+[[reminders]]
+name = "Hard Lotus"
+type = "weekly"
+day = "Thursday"                   # full name or 3 letters: "Thu"
+time = "20:00"
+
+[[reminders]]
+name = "Monday and Thursday"
+type = "weekly"
+days = ["Monday", "Thursday"]
+time = "20:00"
+notice_minutes = [60, 10]
+
+[[reminders]]
+name = "Weekday standup"
+type = "weekly"
+days = "weekdays"                  # or "weekends"
+time = "09:30"
+
+[[reminders]]
+name = "Biweekly boss"
+type = "weekly"
+day = "Thursday"
+every_weeks = 2
+starts = "2026-11-05"              # required when every_weeks is more than 1; weeks run Monday to Sunday
+time = "20:00"
+skip = ["2026-12-24..2026-12-31"]  # single dates and ranges, e.g. a holiday break
+
+
+# --- monthly: a date, the last/first weekday, or the Nth weekday -------------
+[[reminders]]
+name = "Pay day"
+type = "monthly"
+on = 15                            # a day number 1-31 (31 in a short month = its last day)
+if_weekend = "before"              # optional: if it's a weekend, use the Friday "before" or Monday "after"
+time = "09:00"
+
+[[reminders]]
+name = "Month-end report"
+type = "monthly"
+on = "last_weekday"                # "last" (last day), "last_weekday", or "first_weekday"
+time = "16:00"
+
+[[reminders]]
+name = "Last Friday event"
+type = "monthly"
+nth = -1                           # 1-4 for first to fourth, -1 for last
+day = "Friday"
+time = "20:00"
+
+[[reminders]]
+name = "Quarterly review"
+type = "monthly"
+on = 1
+every_months = 3                   # every 3 months (quarterly); needs starts
+starts = "2027-01-01"
+time = "10:00"
+
+
+# --- yearly: the same date every year ---------------------------------------
+[[reminders]]
+name = "Domain renewal"
+type = "yearly"
+month = "March"                    # 1-12 or a name
+on = 14                            # day of the month (Feb 29 becomes Feb 28 in other years)
+time = "09:00"
+notice_minutes = [10080, 1440]     # a week and a day before
+
+
+# --- Any reminder can be switched off without deleting it -------------------
+[[reminders]]
+name = "Paused reminder"
+type = "daily"
+time = "12:00"
+enabled = false
